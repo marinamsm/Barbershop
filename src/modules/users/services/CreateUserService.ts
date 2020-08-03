@@ -1,23 +1,29 @@
-import {getRepository} from 'typeorm';
-import {hash} from 'bcryptjs';
+import { hash } from 'bcryptjs';
+import { inject, injectable } from 'tsyringe';
+import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import User from '@modules/users/infra/typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
 
-interface RequestDTO {
+interface IRequestDTO {
     name: string;
     email: string;
     password: string;
 }
 
+@injectable()
 class CreateUserService {
-    public async execute({name, email, password}: RequestDTO): Promise<User> {
-        const usersRepository = getRepository(User);
+    private usersRepository: IUsersRepository;
 
-        const existentUser = await usersRepository.findOne({
-            where: {
-                email
-            }
-        });
+    constructor(@inject('UsersRepository') usersRepository: IUsersRepository) {
+        this.usersRepository = usersRepository;
+    }
+
+    public async execute({
+        name,
+        email,
+        password,
+    }: IRequestDTO): Promise<User> {
+        const existentUser = await this.usersRepository.findByEmail(email);
 
         if (existentUser) {
             throw new AppError('Someone is already using this email');
@@ -25,15 +31,12 @@ class CreateUserService {
 
         const hashedPassword = await hash(password, 8);
 
-        const user = usersRepository.create({name, email, password: hashedPassword});
-
-        await usersRepository.save(user);
-
-        delete user.password;
-
-        return user;
+        return this.usersRepository.create({
+            name,
+            email,
+            password: hashedPassword,
+        });
     }
-
 }
 
 export default CreateUserService;

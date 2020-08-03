@@ -1,32 +1,46 @@
-import {startOfHour} from 'date-fns';
-import {getCustomRepository} from 'typeorm';
+import { startOfHour } from 'date-fns';
+import { inject, injectable } from 'tsyringe';
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
-import AppointmentsRepository from '@modules/appointments/repositories/AppointmentsRepository';
+import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import AppError from '@shared/errors/AppError';
 
-interface RequestDTO {
+interface IRequestDTO {
     providerId: string;
     date: Date;
 }
 
+@injectable()
 class CreateAppointmentService {
-    public async execute({providerId, date}: RequestDTO): Promise<Appointment> {
-        const appointmentRepository = getCustomRepository(AppointmentsRepository);
-        const rightDate = startOfHour(date);
+    private appointmentRepository: IAppointmentsRepository;
 
-        const existentAppointment = await appointmentRepository.findByDate(rightDate);
-
-        if (existentAppointment) {
-            throw new AppError('Someone already made an appointment at this date and time');
-        }
-
-        const appointment = appointmentRepository.create({providerId, date: rightDate});
-
-        await appointmentRepository.save(appointment);
-
-        return appointment;
+    constructor(
+        @inject('AppointmentsRepository')
+        appointmentRepository: IAppointmentsRepository,
+    ) {
+        this.appointmentRepository = appointmentRepository;
     }
 
+    public async execute({
+        providerId,
+        date,
+    }: IRequestDTO): Promise<Appointment> {
+        const rightDate = startOfHour(date);
+
+        const existentAppointment = await this.appointmentRepository.findByDate(
+            rightDate,
+        );
+
+        if (existentAppointment) {
+            throw new AppError(
+                'Someone already made an appointment at this date and time',
+            );
+        }
+
+        return this.appointmentRepository.create({
+            providerId,
+            date: rightDate,
+        });
+    }
 }
 
 export default CreateAppointmentService;
