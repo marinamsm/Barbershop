@@ -1,5 +1,5 @@
-import { hash } from 'bcryptjs';
 import { inject, injectable } from 'tsyringe';
+import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import User from '@modules/users/infra/typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
@@ -14,8 +14,14 @@ interface IRequestDTO {
 class CreateUserService {
     private usersRepository: IUsersRepository;
 
-    constructor(@inject('UsersRepository') usersRepository: IUsersRepository) {
+    private hashProvider: IHashProvider;
+
+    constructor(
+        @inject('UsersRepository') usersRepository: IUsersRepository,
+        @inject('HashProvider') hashProvider: IHashProvider,
+    ) {
         this.usersRepository = usersRepository;
+        this.hashProvider = hashProvider;
     }
 
     public async execute({
@@ -29,7 +35,7 @@ class CreateUserService {
             throw new AppError('Someone is already using this email');
         }
 
-        const hashedPassword = await hash(password, 8);
+        const hashedPassword = await this.hashProvider.generateHash(password);
 
         return this.usersRepository.create({
             name,
