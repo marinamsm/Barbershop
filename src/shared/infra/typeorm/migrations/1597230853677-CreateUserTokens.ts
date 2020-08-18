@@ -1,35 +1,35 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export default class CreateUsers1593469264147 implements MigrationInterface {
+export default class CreateUserTokens1597230853677
+    implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'users',
+                name: 'user_tokens',
                 columns: [
                     {
                         name: 'id',
                         type: 'uuid',
-                        isPrimary: true,
-                        isNullable: false,
-                        isUnique: true,
                         generationStrategy: 'uuid',
                         default: 'uuid_generate_v4()',
-                    },
-                    {
-                        name: 'name',
-                        type: 'varchar',
-                        isNullable: false,
-                    },
-                    {
-                        name: 'email',
-                        type: 'varchar',
-                        isNullable: false,
+                        isGenerated: true,
                         isUnique: true,
+                        isPrimary: true,
+                        isNullable: false,
                     },
                     {
-                        name: 'password',
-                        type: 'varchar',
+                        name: 'token',
+                        type: 'uuid',
+                        generationStrategy: 'uuid',
+                        default: 'uuid_generate_v4()',
+                        isGenerated: true,
+                        isUnique: true,
+                        isPrimary: true,
                         isNullable: false,
+                    },
+                    {
+                        name: 'user_id',
+                        type: 'uuid',
                     },
                     {
                         name: 'created_at',
@@ -44,11 +44,21 @@ export default class CreateUsers1593469264147 implements MigrationInterface {
                         isNullable: false,
                     },
                 ],
+                foreignKeys: [
+                    {
+                        name: 'TokenUser',
+                        columnNames: ['user_id'],
+                        referencedTableName: 'users',
+                        referencedColumnNames: ['id'],
+                        onDelete: 'CASCADE',
+                        onUpdate: 'CASCADE',
+                    },
+                ],
             }),
         );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('users');
+        await queryRunner.dropTable('user_tokens');
     }
 }
