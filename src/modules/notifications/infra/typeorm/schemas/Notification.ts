@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity('notifications')
-class Notifications {
+class Notification {
     @ObjectIdColumn()
     id: ObjectID;
 
@@ -28,4 +28,4 @@ class Notifications {
     updatedAt: Date;
 }
 
-export default Notifications;
+export default Notification;
