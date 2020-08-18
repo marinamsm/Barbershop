@@ -4,15 +4,20 @@ import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarSer
 import FakeUsersRepository from '@modules/users/fakes/FakeUsersRepository';
 import FakeStorageProvider from '@shared/container/providers/StorageProvider/fakes/FakeStorageProvider';
 
+let fakeRepository: FakeUsersRepository;
+let fakeStorageProvider: FakeStorageProvider;
+let updateUserAvatarService: UpdateUserAvatarService;
+
 describe('Update User Avatar', () => {
-    it("should add user's avatar", async () => {
-        const fakeRepository = new FakeUsersRepository();
-        const fakeStorageProvider = new FakeStorageProvider();
-        const updateUserAvatarService = new UpdateUserAvatarService(
+    beforeEach(() => {
+        fakeRepository = new FakeUsersRepository();
+        fakeStorageProvider = new FakeStorageProvider();
+        updateUserAvatarService = new UpdateUserAvatarService(
             fakeRepository,
             fakeStorageProvider,
         );
-
+    });
+    it("should add user's avatar", async () => {
         const newUser = await fakeRepository.create({
             name: 'Jhon Doe',
             email: 'jd@gmail.com',
@@ -28,12 +33,6 @@ describe('Update User Avatar', () => {
     });
 
     it('should update old avatar to new one', async () => {
-        const fakeRepository = new FakeUsersRepository();
-        const fakeStorageProvider = new FakeStorageProvider();
-        const updateUserAvatarService = new UpdateUserAvatarService(
-            fakeRepository,
-            fakeStorageProvider,
-        );
         const deleteFile = jest.spyOn(fakeStorageProvider, 'deleteFile');
         const newUser = await fakeRepository.create({
             name: 'Jhon Doe',
@@ -56,14 +55,7 @@ describe('Update User Avatar', () => {
     });
 
     it("should not add user's avatar in unlogged user", async () => {
-        const fakeRepository = new FakeUsersRepository();
-        const fakeStorageProvider = new FakeStorageProvider();
-        const updateUserAvatarService = new UpdateUserAvatarService(
-            fakeRepository,
-            fakeStorageProvider,
-        );
-
-        expect(
+        await expect(
             updateUserAvatarService.execute({
                 userId: '987654321',
                 avatarFilename: 'avatar-test.jpg',

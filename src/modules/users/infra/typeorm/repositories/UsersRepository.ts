@@ -1,7 +1,8 @@
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import User from '@modules/users/infra/typeorm/entities/User';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
-import { getRepository, Repository } from 'typeorm';
+import IFindAllProvidersDTO from '@modules/users/dtos/IFindAllProvidersDTO';
+import { getRepository, Repository, Not } from 'typeorm';
 
 export default class UsersRepository implements IUsersRepository {
     private ormRepository: Repository<User>;
@@ -38,5 +39,19 @@ export default class UsersRepository implements IUsersRepository {
                 email,
             },
         });
+    }
+
+    public async findAllProviders({
+        exceptOwnId,
+    }: IFindAllProvidersDTO): Promise<User[]> {
+        const where = {
+            id: Not('invalid-id'),
+        };
+
+        if (exceptOwnId) {
+            where.id = Not(exceptOwnId);
+        }
+
+        return this.ormRepository.find(where);
     }
 }
