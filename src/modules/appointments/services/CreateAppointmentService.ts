@@ -6,6 +6,7 @@ import AppError from '@shared/errors/AppError';
 
 interface IRequestDTO {
     providerId: string;
+    userId: string;
     date: Date;
 }
 
@@ -22,6 +23,7 @@ class CreateAppointmentService {
 
     public async execute({
         providerId,
+        userId,
         date,
     }: IRequestDTO): Promise<Appointment> {
         const rightDate = startOfHour(date);
@@ -38,6 +40,7 @@ class CreateAppointmentService {
 
         return this.appointmentRepository.create({
             providerId,
+            userId,
             date: rightDate,
         });
     }

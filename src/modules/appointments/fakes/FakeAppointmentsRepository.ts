@@ -1,8 +1,18 @@
 import { uuid } from 'uuidv4';
-import { isEqual } from 'date-fns';
+import {
+    isEqual,
+    getYear,
+    getMonth,
+    getDate,
+    getHours,
+    isBefore,
+} from 'date-fns';
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import ICreateAppointmentDTO from '@modules/appointments/dtos/ICreateAppointmentDTO';
+import IMonthAvailabilityByProviderDTO from '@modules/appointments/dtos/IMonthAvailabilityByProviderDTO';
+import IDayAvailabilityByProviderDTO from '@modules/appointments/dtos/IDayAvailabilityByProviderDTO';
+import AppError from '@shared/errors/AppError';
 
 class AppointmentsRepository implements IAppointmentsRepository {
     private appointments: Appointment[];
@@ -21,11 +31,30 @@ class AppointmentsRepository implements IAppointmentsRepository {
 
     public async create({
         providerId,
+        userId,
         date,
     }: ICreateAppointmentDTO): Promise<Appointment> {
         const appointment = new Appointment();
 
-        Object.assign(appointment, { id: uuid(), date, providerId });
+        const currentDate = new Date(Date.now());
+
+        if (isBefore(date, currentDate)) {
+            throw new AppError(
+                `Invalid Date. Date: ${date} CurrentDate: ${currentDate}`,
+            );
+        }
+
+        if (userId === providerId) {
+            throw new AppError("Can't make an appointment with yourself.");
+        }
+
+        if (getHours(date) < 8 || getHours(date) > 17) {
+            throw new AppError(
+                "Can't make an appointment before 8am or after 5pm.",
+            );
+        }
+
+        Object.assign(appointment, { id: uuid(), date, providerId, userId });
 
         this.appointments.push(appointment);
 
@@ -34,6 +63,38 @@ class AppointmentsRepository implements IAppointmentsRepository {
 
     public async find(): Promise<Appointment[]> {
         return this.appointments;
+    }
+
+    public async findMonthAvailabilityByProvider({
+        providerId,
+        month,
+        year,
+    }: IMonthAvailabilityByProviderDTO): Promise<Appointment[]> {
+        const appointments = this.appointments.filter(
+            appointment =>
+                appointment.providerId === providerId &&
+                getMonth(appointment.date) + 1 === month &&
+                getYear(appointment.date) === year,
+        );
+
+        return appointments;
+    }
+
+    public async findDayAvailabilityByProvider({
+        providerId,
+        month,
+        year,
+        date,
+    }: IDayAvailabilityByProviderDTO): Promise<Appointment[]> {
+        const appointments = this.appointments.filter(
+            appointment =>
+                appointment.providerId === providerId &&
+                getMonth(appointment.date) + 1 === month &&
+                getYear(appointment.date) === year &&
+                getDate(appointment.date) === date,
+        );
+
+        return appointments;
     }
 }
 
