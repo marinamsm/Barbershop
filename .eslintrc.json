@@ -20,9 +20,14 @@
         "prettier"
     ],
     "rules": {
+        "class-methods-use-this": "off",
+        "no-console": "off",
+        "no-plusplus": "off",
+        "no-await-in-loop": "off",
         "prettier/prettier": "error",
         "@typescript-eslint/interface-name-prefix": [
             "error",
+            "ignorePackages",
             {
                 "prefixWithI": "always"
             }
