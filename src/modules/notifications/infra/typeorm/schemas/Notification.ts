@@ -12,13 +12,13 @@ class Notification {
     @ObjectIdColumn()
     id: ObjectID;
 
-    @Column()
+    @Column({ type: 'varchar' })
     content: string;
 
     @Column({ name: 'recipient_id', type: 'uuid' })
     recipientId: string;
 
-    @Column({ default: false })
+    @Column({ type: 'boolean', default: false })
     read: boolean;
 
     @CreateDateColumn({ name: 'created_at' })
