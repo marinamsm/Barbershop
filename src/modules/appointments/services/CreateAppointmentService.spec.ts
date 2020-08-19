@@ -2,14 +2,20 @@ import 'reflect-metadata';
 import AppError from '@shared/errors/AppError';
 import CreateAppointmentService from '@modules/appointments/services/CreateAppointmentService';
 import FakeAppointmentsRepository from '@modules/appointments/fakes/FakeAppointmentsRepository';
+import FakeNotificationsRepository from '@modules/notifications/fakes/FakeNotificationsRepository';
 
 let fakeRepository: FakeAppointmentsRepository;
 let createAppointmentService: CreateAppointmentService;
+let fakeNotificationsRepository: FakeNotificationsRepository;
 
 describe('CreateAppointment', () => {
     beforeEach(() => {
         fakeRepository = new FakeAppointmentsRepository();
-        createAppointmentService = new CreateAppointmentService(fakeRepository);
+        fakeNotificationsRepository = new FakeNotificationsRepository();
+        createAppointmentService = new CreateAppointmentService(
+            fakeRepository,
+            fakeNotificationsRepository,
+        );
     });
 
     it('should create a new appointment', async () => {
