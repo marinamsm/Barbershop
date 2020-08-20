@@ -1,10 +1,8 @@
-import path from 'path';
-import fs from 'fs';
+import { classToClass } from 'class-transformer';
 import { inject, injectable } from 'tsyringe';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';
 import User from '@modules/users/infra/typeorm/entities/User';
-import uploadConfig from '@config/upload';
 import AppError from '@shared/errors/AppError';
 
 interface IRequest {
@@ -44,8 +42,7 @@ export default class UpdateUserAvatarService {
         user.avatar = filename;
 
         user = await this.usersRepository.save(user);
-        delete user.password;
 
-        return user;
+        return classToClass(user);
     }
 }

@@ -1,8 +1,9 @@
+import { getRepository, Repository, Not } from 'typeorm';
+import { classToClass } from 'class-transformer';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import User from '@modules/users/infra/typeorm/entities/User';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
 import IFindAllProvidersDTO from '@modules/users/dtos/IFindAllProvidersDTO';
-import { getRepository, Repository, Not } from 'typeorm';
 
 export default class UsersRepository implements IUsersRepository {
     private ormRepository: Repository<User>;
@@ -20,9 +21,7 @@ export default class UsersRepository implements IUsersRepository {
 
         await this.ormRepository.save(user);
 
-        delete user.password;
-
-        return user;
+        return classToClass(user);
     }
 
     public async save(user: User): Promise<User> {

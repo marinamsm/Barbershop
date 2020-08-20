@@ -1,5 +1,6 @@
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
+import { classToClass } from 'class-transformer';
 import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import authConfig from '@config/auth';
@@ -45,8 +46,6 @@ class CreateUserService {
             throw new AppError('Email/password invalid', 401);
         }
 
-        delete user.password;
-
         const { secret, expiresIn } = authConfig.jwt;
 
         const token = sign({}, secret, {
@@ -54,7 +53,7 @@ class CreateUserService {
             expiresIn,
         });
 
-        return { user, token };
+        return { user: classToClass(user), token };
     }
 }
 
