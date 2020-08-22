@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
+import rateLimiter from '@shared/infra/http/middlewares/rateLimiter';
 import { errors } from 'celebrate';
 import '@shared/infra/typeorm';
 import 'express-async-errors';
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(rateLimiter);
 app.use('/files', express.static(filesConfig.finalPath));
 app.use(routes);
 app.use(errors());
