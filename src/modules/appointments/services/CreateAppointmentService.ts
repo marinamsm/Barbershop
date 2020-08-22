@@ -1,8 +1,10 @@
-import { startOfHour, format } from 'date-fns';
+import { startOfHour, format, getYear, getMonth, getDate } from 'date-fns';
 import { inject, injectable } from 'tsyringe';
+import getDatePattern from '@shared/container/utils/getDatePattern';
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
 import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 import AppError from '@shared/errors/AppError';
 
 interface IRequestDTO {
@@ -17,14 +19,19 @@ class CreateAppointmentService {
 
     private notificationsRepository: INotificationsRepository;
 
+    private cacheProvider: ICacheProvider;
+
     constructor(
         @inject('AppointmentsRepository')
         appointmentRepository: IAppointmentsRepository,
         @inject('NotificationsRepository')
         notificationsRepository: INotificationsRepository,
+        @inject('CacheProvider')
+        cacheProvider: ICacheProvider,
     ) {
         this.appointmentRepository = appointmentRepository;
         this.notificationsRepository = notificationsRepository;
+        this.cacheProvider = cacheProvider;
     }
 
     public async execute({
@@ -44,7 +51,7 @@ class CreateAppointmentService {
             );
         }
 
-        const newAppointment = this.appointmentRepository.create({
+        const newAppointment = await this.appointmentRepository.create({
             providerId,
             userId,
             date: rightDate,
@@ -56,6 +63,12 @@ class CreateAppointmentService {
             content: `Novo agendamento para ${formattedDate}`,
             recipientId: providerId,
         });
+
+        const { year, month, day } = getDatePattern(rightDate);
+
+        const indexKey = `provider-appointments:${providerId}:${year}:${month}:${day}`;
+
+        await this.cacheProvider.invalidate(indexKey);
 
         return newAppointment;
     }
