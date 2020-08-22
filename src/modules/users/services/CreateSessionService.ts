@@ -5,6 +5,7 @@ import IHashProvider from '@modules/users/providers/HashProvider/models/IHashPro
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
+import User from '@modules/users/infra/typeorm/entities/User';
 
 interface IRequest {
     email: string;
@@ -12,7 +13,7 @@ interface IRequest {
 }
 
 interface IResponse {
-    user: object;
+    user: User;
     token: string;
 }
 

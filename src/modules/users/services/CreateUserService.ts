@@ -33,7 +33,7 @@ class CreateUserService {
         name,
         email,
         password,
-    }: IRequestDTO): Promise<User> {
+    }: IRequestDTO): Promise<Omit<User, 'getAvatarUrl'>> {
         const existentUser = await this.usersRepository.findByEmail(email);
 
         if (existentUser) {

@@ -29,7 +29,7 @@ describe('Update User Avatar', () => {
             avatarFilename: 'avatar-test.jpg',
         });
 
-        expect(userUpdated.avatar).toBe('avatar-test.jpg');
+        expect(userUpdated.avatar).toContain('avatar-test.jpg');
     });
 
     it('should update old avatar to new one', async () => {
@@ -51,7 +51,7 @@ describe('Update User Avatar', () => {
         });
 
         expect(deleteFile).toHaveBeenCalledWith('avatar-test-old.jpg');
-        expect(userUpdated.avatar).toBe('avatar-test-new.jpg');
+        expect(userUpdated.avatar).toContain('avatar-test-new.jpg');
     });
 
     it("should not add user's avatar in unlogged user", async () => {

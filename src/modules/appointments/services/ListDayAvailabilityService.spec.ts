@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import ListDayAvailability from '@modules/appointments/services/ListDayAvailabilityService';
 import FakeAppointmentsRepository from '@modules/appointments/fakes/FakeAppointmentsRepository';
-import AppError from '@shared/errors/AppError';
 
 let fakeRepository: FakeAppointmentsRepository;
 let listAvailabilityService: ListDayAvailability;

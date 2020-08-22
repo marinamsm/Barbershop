@@ -15,10 +15,16 @@ export default class UsersRepository implements IUsersRepository {
         name,
         email,
         password,
-    }: ICreateUserDTO): Promise<User> {
+    }: ICreateUserDTO): Promise<Omit<User, 'getAvatarUrl'>> {
         const user = new User();
 
-        Object.assign(user, { id: uuid(), name, email, password });
+        Object.assign(user, {
+            id: uuid(),
+            name,
+            email,
+            password,
+            avatar: null,
+        });
 
         this.users.push(user);
 
