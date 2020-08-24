@@ -20,6 +20,11 @@ providersRouter.get(
         [Segments.PARAMS]: {
             id: Joi.string().uuid().required(),
         },
+        [Segments.QUERY]: {
+            month: Joi.number().required(),
+            year: Joi.number().required(),
+            date: Joi.number().required(),
+        },
     }),
     dayAvailabilityCtrl.index,
 );
@@ -28,6 +33,10 @@ providersRouter.get(
     celebrate({
         [Segments.PARAMS]: {
             id: Joi.string().uuid().required(),
+        },
+        [Segments.QUERY]: {
+            month: Joi.number().required(),
+            year: Joi.number().required(),
         },
     }),
     monthAvailabilityCtrl.index,
