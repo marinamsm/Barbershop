@@ -39,7 +39,7 @@ class ListProvidersAppointmentsService {
             Appointment[]
         >(indexKey);
 
-        let appointments = null;
+        let appointments = cachedAppointments;
 
         if (!appointments) {
             // console.log('------QUERY-------');

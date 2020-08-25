@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 import ListProvidersAppointmentsService from '@modules/appointments/services/ListProvidersAppointmentsService';
+import { classToClass } from 'class-transformer';
 
 /* eslint-disable class-methods-use-this */
 export default class ProviderAppointmentsController {
@@ -19,6 +20,6 @@ export default class ProviderAppointmentsController {
             date: Number(date),
         });
 
-        return response.json(appointments);
+        return response.json(classToClass(appointments));
     }
 }
