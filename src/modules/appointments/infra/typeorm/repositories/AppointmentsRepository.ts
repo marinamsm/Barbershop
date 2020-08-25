@@ -90,7 +90,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
         year,
         date,
     }: IDayAvailabilityByProviderDTO): Promise<Appointment[]> {
-        const appointments = await this.ormRepository.find({
+        return this.ormRepository.find({
             where: {
                 providerId,
                 date: Between(
@@ -101,9 +101,8 @@ class AppointmentsRepository implements IAppointmentsRepository {
             order: {
                 date: 'ASC',
             },
+            relations: ['user'],
         });
-
-        return appointments;
     }
 }
 
