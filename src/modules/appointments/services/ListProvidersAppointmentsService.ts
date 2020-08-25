@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { startOfHour } from 'date-fns';
+import { classToClass } from 'class-transformer';
 import getDatePattern from '@shared/container/utils/getDatePattern';
 import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import IAppointmentsRepository from '@modules/appointments/repositories/IAppointmentsRepository';
@@ -52,7 +53,7 @@ class ListProvidersAppointmentsService {
                 },
             );
 
-            await this.cacheProvider.save(indexKey, appointments);
+            await this.cacheProvider.save(indexKey, classToClass(appointments));
         }
 
         return appointments;
