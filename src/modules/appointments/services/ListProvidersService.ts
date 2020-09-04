@@ -30,7 +30,7 @@ class ListProvidersService {
         let providers = await this.cacheProvider.recover<User[]>(indexKey);
 
         if (!providers) {
-            // console.log('------QUERY-------');
+            console.log('------QUERY-------');
             providers = await this.usersRepository.findAllProviders({
                 exceptOwnId: userId,
             });

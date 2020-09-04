@@ -43,7 +43,7 @@ class ListProvidersAppointmentsService {
         let appointments = cachedAppointments;
 
         if (!appointments) {
-            // console.log('------QUERY-------');
+            console.log('------QUERY-------');
             appointments = await this.appointmentRepository.findDayAvailabilityByProvider(
                 {
                     providerId,

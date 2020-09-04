@@ -10,7 +10,7 @@ interface IRequest {
 }
 
 type IResponse = Array<{
-    hour: string;
+    hour: number;
     available: boolean;
 }>;
 
@@ -57,7 +57,7 @@ class ListDayAvailability {
             const desiredDate = new Date(year, month - 1, date, hour);
 
             return {
-                hour: `${hour}h`,
+                hour,
                 available:
                     !appointmentsInHour && isAfter(desiredDate, currentDate),
             };
