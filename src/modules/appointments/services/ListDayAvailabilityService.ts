@@ -55,11 +55,13 @@ class ListDayAvailability {
             );
 
             const desiredDate = new Date(year, month - 1, date, hour);
-
+            const dayOfTheWeek = desiredDate.getDay();
+            const isWeekend = dayOfTheWeek === 6 || dayOfTheWeek === 0;
+            const invalidHourToSchedule = isWeekend || appointmentsInHour;
             return {
                 hour,
                 available:
-                    !appointmentsInHour && isAfter(desiredDate, currentDate),
+                    !invalidHourToSchedule && isAfter(desiredDate, currentDate),
             };
         });
 
